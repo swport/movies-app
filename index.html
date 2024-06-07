@@ -4,8 +4,12 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/movies-app/favicon.svg" />
     <link rel="manifest" href="/movies-app/manifest.webmanifest" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Simple Movie Search Application</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Movie React application with infinite scroll, mocked fetch calls, debounced search, filters, and add to favourite"
+    />
+    <title>Movie React application</title>
     <script>
       let movies_list = []; // movies list
       let genres = []; // geners list
@@ -14,8 +18,11 @@
       (function () {
         const originalFetch = window.fetch;
 
-        const jsonFilePath = "/data/Imdb250.json";
-        const apiPath = "/api/data";
+        const jsonFilePath = (location.pathname + "/data/Imdb250.json").replace(
+          /\/+/g,
+          "/"
+        );
+        const apiPath = (location.pathname + "/api/data").replace(/\/+/g, "/");
 
         function paginateData(items, page = 1, perPage = 10) {
           const offset = perPage * (page - 1);
@@ -105,10 +112,9 @@
         };
       })();
     </script>
-    <script type="module" crossorigin src="/movies-app/assets/index-BTJJLSG2.js"></script>
-    <link rel="stylesheet" crossorigin href="/movies-app/assets/index-CzXeJ9oR.css">
   </head>
   <body>
-    <div id="root"></div>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
   </body>
 </html>
