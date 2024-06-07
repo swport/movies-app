@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { TFilterParams, TMovie, TMoviesResponse } from "src/types";
+import { TFilterParams, TMovie } from "src/types";
 
 const useMovies = () => {
   const [pageNo, setPageNo] = useState(1);

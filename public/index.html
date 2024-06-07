@@ -22,7 +22,7 @@
           /\/+/g,
           "/"
         );
-        const apiPath = "/api/data";
+        const apiPath = (location.pathname + "/api/data").replace(/\/+/g, "/");
 
         function paginateData(items, page = 1, perPage = 10) {
           const offset = perPage * (page - 1);
@@ -116,6 +116,5 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

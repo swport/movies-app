@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/movies-app/favicon.svg" />
+    <link rel="manifest" href="/movies-app/manifest.webmanifest" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Movie React application with infinite scroll, mocked fetch calls, debounced search, filters, and add to favourite"
+    />
+    <title>Movie React application</title>
+    <script>
+      let movies_list = []; // movies list
+      let genres = []; // geners list
+
+      // mock Javascript fetch API for list of movies and genres
+      (function () {
+        const originalFetch = window.fetch;
+
+        const jsonFilePath = (location.pathname + "/data/Imdb250.json").replace(
+          /\/+/g,
+          "/"
+        );
+        const apiPath = "/api/data";
+
+        function paginateData(items, page = 1, perPage = 10) {
+          const offset = perPage * (page - 1);
+          const totalPages = Math.ceil(items.length / perPage);
+          const paginatedItems = items.slice(offset, perPage * page);
+
+          return {
+            previousPage: page - 1 ? page - 1 : null,
+            nextPage: totalPages > page ? page + 1 : null,
+            total: items.length,
+            totalPages: totalPages,
+            items: paginatedItems,
+          };
+        }
+
+        function getGenresData(items) {
+          if (genres.length) return genres;
+          const map = new Set();
+          for (let i = 0, len = items.length; i < len; i++) {
+            const item = items[i];
+            if ("genre" in item) {
+              const genres = item["genre"];
+              for (let j = 0, len2 = genres.length; j < len2; j++) {
+                map.add(genres[j]);
+              }
+            }
+          }
+          genres = Array.from(map);
+          return genres;
+        }
+
+        function respond(data) {
+          return {
+            status: 200,
+            json: () => Promise.resolve(data),
+          };
+        }
+
+        window.fetch = function () {
+          const url = arguments[0];
+          if (url && url.indexOf(apiPath) > -1) {
+            let pageItems = 10;
+            let pageNo = 1;
+
+            let action = "fetch_movies";
+
+            if (url.indexOf("?") > -1) {
+              const urlParams = new URLSearchParams(url.split("?")[1]);
+              if (urlParams.has("pageNo"))
+                pageNo = parseInt(urlParams.get("pageNo"));
+              if (urlParams.has("pageItems"))
+                pageNo = parseInt(urlParams.get("pageItems"));
+              if (urlParams.has("action"))
+                action = urlParams.get("action").trim();
+            }
+
+            return new Promise(function (resolve, reject) {
+              function finalResolve(data) {
+                setTimeout(function () {
+                  resolve(data);
+                }, 350);
+              }
+              if (!movies_list.length) {
+                originalFetch(jsonFilePath).then(function (res) {
+                  res.json().then(function (items) {
+                    movies_list = items;
+                    if (action == "fetch_genres")
+                      finalResolve(respond(getGenresData(items)));
+                    else
+                      finalResolve(
+                        respond(paginateData(items, pageNo, pageItems))
+                      );
+                  });
+                });
+              } else {
+                if (action == "fetch_genres")
+                  finalResolve(respond(getGenresData(movies_list)));
+                else
+                  finalResolve(
+                    respond(paginateData(movies_list, pageNo, pageItems))
+                  );
+              }
+            });
+          }
+
+          return originalFetch.apply(window, arguments);
+        };
+      })();
+    </script>
+    <script type="module" crossorigin src="/movies-app/assets/index-BTJJLSG2.js"></script>
+    <link rel="stylesheet" crossorigin href="/movies-app/assets/index-CzXeJ9oR.css">
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+  </body>
+</html>
