@@ -22,7 +22,7 @@
           /\/+/g,
           "/"
         );
-        const apiPath = (location.pathname + "/api/data").replace(/\/+/g, "/");
+        const apiPath = "/api/data";
 
         function paginateData(items, page = 1, perPage = 10) {
           const offset = perPage * (page - 1);
